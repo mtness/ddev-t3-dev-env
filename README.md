@@ -1,179 +1,177 @@
 # DDEV for TYPO3 extensions
 
-This is an example configuration for DDEV to provide a development environment
-for a single TYPO3 CMS extension.
+This repository provides an example DDEV setup for developing a single TYPO3 CMS extension.
 
-It also provides a very basic skeleton of a TYPO3 extension, which automatically gets 
-installed in all TYPO3 versions.
+It includes:
 
-Currently, the following TYPO3 CMS versions are supported (using PHP 8.2):
+- a reusable `.ddev` configuration for extension development
+- a minimal TYPO3 extension skeleton
+- ready-to-run installation commands for multiple TYPO3 versions
+- local documentation rendering via the TYPO3 documentation container
 
-- TYPO3 11.5 LTS
-- TYPO3 12.4 LTS
+The extension in the repository is only a placeholder. Rename and adjust it for your own project before using the setup productively.
+
+Currently supported TYPO3 versions with PHP 8.4:
+
 - TYPO3 13.4 LTS
+- TYPO3 14.3 LTS
 
-If you are looking for older TYPO3 CMS versions, you can check out and use those tags:
+In TYPO3 14.3, the Camino theme is installed as the default distribution.
 
-- [TYPO3 CMS 9.5 & 10.4 LTS](https://github.com/a-r-m-i-n/ddev-for-typo3-extensions/tree/v9-support)
+If you need older TYPO3 versions, use one of these tags:
+
+- [TYPO3 CMS 11.5, 12.4 and 13.4 LTS with PHP 8.2](https://github.com/a-r-m-i-n/ddev-for-typo3-extensions/tree/v12-support)
+- [TYPO3 CMS 9.5 and 10.4 LTS](https://github.com/a-r-m-i-n/ddev-for-typo3-extensions/tree/v9-support)
 - [TYPO3 CMS 8.7 LTS](https://github.com/a-r-m-i-n/ddev-for-typo3-extensions/tree/v8-support)
 
 ## Setup
 
-1. Copy the entire ``.ddev`` folder to your project's root
-2. Search and replace in all files within ``.ddev``
-    - search for ``my_ext`` and replace with your **extension key** 
-    - search for ``my-ext`` and replace with your **DDEV sitename** (used in URL)
-3. Change the package name ``vendor/my-ext`` in root ``composer.json`` as well as 
-   in environment section in ``.ddev/docker-compose.web.yaml`` file (variable ``PACKAGE_NAME``).
-4. Also adjust the autoload section in root ``composer.json``.
+1. Copy the complete `.ddev` directory into the root of your extension project.
+2. Replace the placeholder values in all files inside `.ddev`:
+   - replace `my_ext` with your TYPO3 extension key
+   - replace `my-ext` with your DDEV site name
+3. Update the package name `vendor/my-ext` in:
+   - `composer.json`
+   - `.ddev/docker-compose.web.yaml` in the `PACKAGE_NAME` environment variable
+4. Adjust the PSR-4 autoload configuration in `composer.json` to match your vendor and extension namespace.
 
-When done with renaming, the following files have been touched:
+After the rename, these files will have usually been changed:
 
-- ``.ddev/apache/apache-site.conf`` to set ServerAlias in vhost
-- ``.ddev/web-build/Dockerfile`` creates initial index.html files
-- ``.ddev/docker-compose.web.yaml`` to define environment variables and Docker volumes 
-- ``.ddev/config.yaml`` to set DDEV sitename and additional hostnames
-- ``composer.json`` the package name of your extension, the autoload and extra section
+- `.ddev/apache/apache-site.conf`
+- `.ddev/config.yaml`
+- `.ddev/docker-compose.web.yaml`
+- `.ddev/web-build/Dockerfile`
+- `composer.json`
 
-You can check the final result in your version control system and share it with your
-collaborators, which can use it instantly.
-
+Once that is done, commit the result to your version control system so collaborators can start the environment without repeating the setup work.
 
 ## Usage
 
 ### Requirements
 
-The following software is required to be installed on the host machine:
+The following software must be installed on the host machine:
 
 - Docker
 - Docker Compose
 - DDEV
 
-Also, an internet connection is required, to fetch containers and packages. 
-Once the environment is installed, no internet connection is required anymore. 
+An internet connection is required during the initial setup to download images and Composer packages. After that, the environment can also be used offline in most cases.
 
+### Start DDEV
 
-### Start DDEV 
+With the `.ddev` directory in place, start the project with:
 
-Check out your project, with ``.ddev `` folder in it and perform a
-
-```
-$ ddev start
+```bash
+ddev start
 ```
 
-on CLI. This will start the containers, but will not install anything automatically.
-
+This starts the containers, but it does not install any TYPO3 instance automatically.
 
 ### Install TYPO3 environments
 
-This environment offers several DDEV commands, to provision the web container, supporting
-the following TYPO3 versions:
+The setup provides dedicated DDEV commands for provisioning separate TYPO3 instances:
 
-```
-$ ddev install-v11
-$ ddev install-v12
-$ ddev install-v13
+```bash
+ddev install-v13
+ddev install-v14
 ```
 
-To install all at once, you can also use
+To install both environments in one step, run:
 
-```
-$ ddev install-all
+```bash
+ddev install-all
 ```
 
-When the installation is done, you can access an overview here:
+Each installation is created in its own directory inside the web container:
+
+- `v13` for TYPO3 13.4
+- `v14` for TYPO3 14.3
+
+After the installation, the overview page is available at:
 
 - https://my-ext.ddev.site/
 
-The TYPO3 installations are available here:
+TYPO3 backend entry points:
 
-- https://v11.my-ext.ddev.site/typo3/
-- https://v12.my-ext.ddev.site/typo3/
 - https://v13.my-ext.ddev.site/typo3/
+- https://v14.my-ext.ddev.site/typo3/
 
-As well as an entry-point to the rendered HTML documentation:
+Rendered local documentation:
 
-- https://docs.my-ext.ddev.site/ (you need to perform ``ddev docs`` first)
+- https://docs.my-ext.ddev.site/
 
-*Note: Replace ``my-ext`` with your DDEV sitename*
+To build the documentation first, run:
 
+```bash
+ddev docs
+```
+
+Replace `my-ext` in the URLs above with your own DDEV site name.
 
 ### Credentials
 
-All versions got the same credentials set:
+All TYPO3 instances use the same backend and install tool credentials:
 
-- Username: ``admin``
-- Password: ``Password:joh316`` (also in install tool)
-
+- Username: `admin`
+- Password: `Password:joh316`
 
 ### TYPO3 CLI / typo3_console
 
-To access TYPO3's CLI tools you can utilize ``ddev exec`` like that:
-```
-$ ddev exec v12/vendor/bin/typo3
-$ ddev exec v13/vendor/bin/typo3
-```
+You can run TYPO3 CLI commands directly inside each installation:
 
-In TYPO3 v11 you can still use the binary of typo3_console:
-```
-$ ddev exec v11/vendor/bin/typo3cms
+```bash
+ddev exec v13/vendor/bin/typo3
+ddev exec v14/vendor/bin/typo3
 ```
 
+TYPO3 14 also includes `helhum/typo3-console` as part of the installation.
 
-### Render and view documentation
+### Render and open documentation
 
-Every extension should have proper documentation, which can get hosted on
-https://docs.typo3.org. To render and view the documentation locally, you can use: 
+To render the extension documentation locally, run:
 
-```
-$ ddev docs
-$ ddev launch-docs
-```
-
-### Remove DDEV project
-
-To remove a DDEV project you can use the following command on CLI
-```
-$ ddev delete -Oy
+```bash
+ddev docs
 ```
 
+To open the rendered result in your browser, run:
+
+```bash
+ddev launch-docs
+```
+
+### Remove the DDEV project
+
+To delete the DDEV project and its containers, run:
+
+```bash
+ddev delete -Oy
+```
 
 ## Support
 
 ### Questions, feature requests, bugs
 
-Feel free to open new issues on Github:
+If you have questions, found a bug, or want to suggest an improvement, please open an issue:
 
 https://github.com/a-r-m-i-n/ddev-for-typo3-extensions/issues
 
-
-### Donate
-
-If you like this project, feel free to [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2DCCULSKFRZFU) 
-some funds to support further development.
-
-
 ### Known problems
-
-#### The package "__root__" depends on "t3/cms" which is not present in the system
-
-When composer gives you this issue, you need to self-update composer.
-This issue occured in Composer 2.5.6.
 
 #### Wrong line endings
 
-When you get the following error
+If you see this error:
 
-> bash: ./install-v13: /bin/bash^M: bad interpreter: No such file or directory
+> bash: ./install-v14: /bin/bash^M: bad interpreter: No such file or directory
 
-your host system is probably Windows based. This issue occurs, when the shell
-scripts got wrong line endings (wrong: CRLF, correct: LF). On Windows, Git changes
-the line-endings by default, if `git config core.autocrlf` is not set to ``false``.
+your host system is probably Windows-based and the shell scripts were checked out with `CRLF` line endings instead of `LF`.
 
+On Windows, Git may change line endings automatically unless `git config core.autocrlf false` is set.
 
 ### Contribute
 
-If you are a developer, and you want to submit improvements as code, you can fork this repo
-and make a pull request to the master branch.
+If you want to contribute code improvements, fork the repository and open a pull request against the `master` branch.
 
-Thanks!
+### Donate
+
+If this project is useful to you, feel free to [donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=2DCCULSKFRZFU) to support further development.
